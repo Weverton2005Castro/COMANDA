@@ -100,3 +100,4 @@ O React escuta esses eventos pelo `SocketContext` para recarregar mesas, comanda
 - A conexao com o banco fica somente no backend via `@supabase/supabase-js`.
 # COMANDA
 # COMANDA
+# COMANDA
