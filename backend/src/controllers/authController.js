@@ -4,6 +4,12 @@ import { supabase } from '../config/supabase.js';
 import { asyncHandler, badRequest } from '../utils/errors.js';
 
 function signToken(user) {
+  if (!process.env.JWT_SECRET) {
+    const error = new Error('JWT_SECRET nao configurado no servidor');
+    error.status = 500;
+    throw error;
+  }
+
   return jwt.sign(
     { id: user.id, tipo: user.tipo },
     process.env.JWT_SECRET,

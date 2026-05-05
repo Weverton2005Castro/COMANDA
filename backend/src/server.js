@@ -10,7 +10,8 @@ import comandasRoutes from './routes/comandasRoutes.js';
 import usuariosRoutes from './routes/usuariosRoutes.js';
 
 const app = express();
-const server = http.createServer(app);
+const isVercel = Boolean(process.env.VERCEL);
+const server = isVercel ? null : http.createServer(app);
 const defaultOrigins = ['http://localhost:3000', 'http://localhost:3001'];
 const allowedOrigins = (process.env.CLIENT_URL || '')
   .split(',')
@@ -35,9 +36,9 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE']
 };
 
-const io = new Server(server, {
-  cors: corsOptions
-});
+const io = server
+  ? new Server(server, { cors: corsOptions })
+  : { emit() {} };
 
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -53,10 +54,12 @@ app.use('/api/produtos', produtosRoutes);
 app.use('/api/comandas', comandasRoutes);
 app.use('/api/usuarios', usuariosRoutes);
 
-io.on('connection', (socket) => {
-  console.log(`Socket conectado: ${socket.id}`);
-  socket.on('disconnect', () => console.log(`Socket desconectado: ${socket.id}`));
-});
+if (server) {
+  io.on('connection', (socket) => {
+    console.log(`Socket conectado: ${socket.id}`);
+    socket.on('disconnect', () => console.log(`Socket desconectado: ${socket.id}`));
+  });
+}
 
 app.use((err, req, res, next) => {
   const status = err.status || 500;
@@ -64,8 +67,10 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`Backend rodando em http://localhost:${PORT}`);
-});
+if (server) {
+  server.listen(PORT, () => {
+    console.log(`Backend rodando em http://localhost:${PORT}`);
+  });
+}
 
 export default app;
