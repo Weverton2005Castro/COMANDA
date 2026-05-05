@@ -44,6 +44,7 @@ SUPABASE_SERVICE_KEY=
 JWT_SECRET=troque-este-segredo
 JWT_EXPIRE=7d
 PORT=5000
+CLIENT_URL=http://localhost:3000
 ```
 
 API: `http://localhost:5000/api`
@@ -57,6 +58,37 @@ npm run dev
 ```
 
 Frontend: `http://localhost:3000`
+
+## Deploy na Vercel
+
+No deploy, o frontend nao deve apontar para `localhost`. Este projeto usa, por padrao:
+
+```env
+VITE_API_URL=/_/backend/api
+```
+
+Configure na Vercel as variaveis do backend:
+
+```env
+SUPABASE_URL=
+SUPABASE_SERVICE_KEY=
+JWT_SECRET=
+JWT_EXPIRE=24h
+NODE_ENV=production
+CLIENT_URL=https://seu-projeto.vercel.app
+```
+
+Se o backend estiver em outro dominio, configure tambem no frontend:
+
+```env
+VITE_API_URL=https://seu-backend.com/api
+```
+
+Socket.io/WebSocket nao roda bem em Vercel Functions, porque elas nao mantem conexoes persistentes. Em producao, deixe `VITE_SOCKET_URL` vazio ou hospede o backend em um servico que suporte WebSocket, como Render, Railway, Fly.io ou um VPS, e entao use:
+
+```env
+VITE_SOCKET_URL=https://seu-backend.com
+```
 
 ## Rotas principais
 
