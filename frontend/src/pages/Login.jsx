@@ -29,7 +29,7 @@ export default function Login() {
         <h1>Sistema de Comandas</h1>
         <label>
           Email
-          <input name="email" type="email" value={form.email} onChange={updateField} required />
+          <input name="email" type="text" value={form.email} onChange={updateField} required />
         </label>
         <label>
           Senha
