@@ -46,7 +46,7 @@ export default function UsuariosManager() {
       <h2>Usuarios</h2>
       <form className="manager-form wide" onSubmit={submit}>
         <input name="nome" placeholder="Nome" value={form.nome} onChange={update} required />
-        <input name="email" placeholder="Email" type="email" value={form.email} onChange={update} required />
+        <input name="email" placeholder="Email" type="text" value={form.email} onChange={update} required />
         <input name="senha" placeholder={editing ? 'Nova senha opcional' : 'Senha'} type="password" value={form.senha} onChange={update} required={!editing} />
         <select name="tipo" value={form.tipo} onChange={update}>
           <option value="garcom">Garcom</option>
