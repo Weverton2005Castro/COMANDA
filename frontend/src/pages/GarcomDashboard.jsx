@@ -14,7 +14,12 @@ export default function GarcomDashboard() {
   function selectMesa(nextMesa) {
     setMesa(nextMesa);
     setComanda(null);
-    navigate("/cardapio")
+
+    navigate("/cardapio", {
+      state: {
+        mesa: nextMesa
+      }
+    });
   }
 
   return (

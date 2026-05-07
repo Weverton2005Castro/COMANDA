@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import api from '../services/api.js';
 import { useToast } from '../contexts/ToastContext.jsx';
 
@@ -9,11 +9,13 @@ const tabs = [
   { id: 'extra', label: 'Extras' }
 ];
 
-export default function Cardapio({ mesa, comanda, onComandaChange }) {
+export default function Cardapio({ comanda, onComandaChange }) {
   const [produtos, setProdutos] = useState([]);
   const [activeTab, setActiveTab] = useState('prato');
   const [selection, setSelection] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
+  const location = useLocation();
+  const mesa = location.state?.mesa;
   const { showToast } = useToast();
 
   const navigate = useNavigate()
@@ -60,7 +62,7 @@ export default function Cardapio({ mesa, comanda, onComandaChange }) {
         : await api.post('/comandas', { mesa_id: mesa?.id, itens });
 
       setSelection([]);
-      onComandaChange(data);
+      onComandaChange?.(data);
       showToast('Itens enviados com sucesso.', 'success');
     } catch (error) {
       console.error('ERRO COMPLETO:', error);
