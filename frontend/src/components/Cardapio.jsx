@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from "react-router-dom"
 import api from '../services/api.js';
 import { useToast } from '../contexts/ToastContext.jsx';
 
@@ -12,7 +13,10 @@ export default function Cardapio({ mesa, comanda, onComandaChange }) {
   const [produtos, setProdutos] = useState([]);
   const [activeTab, setActiveTab] = useState('prato');
   const [selection, setSelection] = useState([]);
+  const [cartOpen, setCartOpen] = useState(false);
   const { showToast } = useToast();
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     api.get('/produtos').then(({ data }) => setProdutos(data.filter((produto) => produto.disponivel)));
@@ -53,57 +57,186 @@ export default function Cardapio({ mesa, comanda, onComandaChange }) {
     try {
       const { data } = comanda
         ? await api.post(`/comandas/${comanda.id}/itens`, { itens })
-        : await api.post('/comandas', { mesa_id: mesa.id, itens });
+        : await api.post('/comandas', { mesa_id: mesa?.id, itens });
 
       setSelection([]);
       onComandaChange(data);
       showToast('Itens enviados com sucesso.', 'success');
     } catch (error) {
-      showToast(error.response?.data?.message || 'Erro ao enviar itens.', 'error');
+      console.error('ERRO COMPLETO:', error);
+      console.error('RESPONSE:', error.response);
+      console.error('DATA:', error.response?.data);
+
+      showToast(
+        error.response?.data?.message || 'Erro ao enviar itens.',
+        'error'
+      );
     }
   }
 
+  const handleVoltar = () => {
+    navigate("/dashboard")
+  }
+
   return (
-    <section className="card">
+    <section className="card" style={{ paddingBottom: '120px' }}>
       <div className="section-title">
         <h2>Cardapio</h2>
-        <strong>{total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong>
+
+        <strong>
+          {total.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+          })}
+        </strong>
       </div>
-      <div className="tabs">
+
+      <div style={{ display: 'flex' }} className="tabs">
         {tabs.map((tab) => (
-          <button className={activeTab === tab.id ? 'active' : ''} key={tab.id} onClick={() => setActiveTab(tab.id)} type="button">
+          <button
+            className={activeTab === tab.id ? 'active' : ''}
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            type="button"
+          >
             {tab.label}
           </button>
         ))}
+
+        <button
+          style={{
+            background: '#808080',
+            color: 'white',
+            marginLeft: 'auto'
+          }}
+          onClick={handleVoltar}
+          type="button"
+        >
+          Voltar
+        </button>
       </div>
+
       <div className="product-grid">
         {visibleProducts.map((produto) => (
-          <button className="product-card" key={produto.id} onClick={() => addProduct(produto)} type="button">
+          <button
+            className="product-card"
+            key={produto.id}
+            onClick={() => addProduct(produto)}
+            type="button"
+          >
             <strong>{produto.nome}</strong>
+
             <span>{produto.descricao}</span>
-            <b>{Number(produto.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</b>
+
+            <b>
+              {Number(produto.preco).toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+              })}
+            </b>
           </button>
         ))}
       </div>
+
       {selection.length > 0 && (
-        <div className="selection-box">
-          <h3>Selecao Atual</h3>
-          {selection.map((item) => (
-            <div className="selection-row" key={item.produto.id}>
-              <span>{item.produto.nome}</span>
-              <div className="quantity-controls">
-                <button className="btn secondary small" onClick={() => changeQuantity(item.produto.id, -1)} type="button">-</button>
-                <strong>{item.quantidade}</strong>
-                <button className="btn primary small" onClick={() => changeQuantity(item.produto.id, 1)} type="button">+</button>
-                <button className="btn danger small" onClick={() => setSelection((list) => list.filter((entry) => entry.produto.id !== item.produto.id))} type="button">
-                  Remover
-                </button>
+        <div
+          className="selection-box"
+          style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            width: '100%',
+            zIndex: 999,
+            borderTopLeftRadius: '20px',
+            borderTopRightRadius: '20px',
+            background: '#fff',
+            padding: '15px',
+            boxShadow: '0 -2px 10px rgba(0,0,0,0.2)'
+          }}
+        >
+          <div
+            onClick={() => setCartOpen(!cartOpen)}
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              cursor: 'pointer'
+            }}
+          >
+            <h3 style={{ margin: 0 }}>
+              Carrinho ({selection.length})
+            </h3>
+
+            <strong>
+              {total.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+              })}
+            </strong>
+          </div>
+
+          {cartOpen && (
+            <>
+              <div style={{ marginTop: '15px' }}>
+                {selection.map((item) => (
+                  <div
+                    className="selection-row"
+                    key={item.produto.id}
+                  >
+                    <span>{item.produto.nome}</span>
+
+                    <div className="quantity-controls">
+                      <button
+                        className="btn secondary small"
+                        onClick={() =>
+                          changeQuantity(item.produto.id, -1)
+                        }
+                        type="button"
+                      >
+                        -
+                      </button>
+
+                      <strong>{item.quantidade}</strong>
+
+                      <button
+                        className="btn primary small"
+                        onClick={() =>
+                          changeQuantity(item.produto.id, 1)
+                        }
+                        type="button"
+                      >
+                        +
+                      </button>
+
+                      <button
+                        className="btn danger small"
+                        onClick={() =>
+                          setSelection((list) =>
+                            list.filter(
+                              (entry) =>
+                                entry.produto.id !== item.produto.id
+                            )
+                          )
+                        }
+                        type="button"
+                      >
+                        Remover
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
-          ))}
-          <button className="btn success full" onClick={submitItems} type="button">
-            Enviar para Comanda
-          </button>
+
+              <button
+                className="btn success full"
+                onClick={submitItems}
+                type="button"
+                style={{ marginTop: '15px' }}
+              >
+                Enviar para Comanda
+              </button>
+            </>
+          )}
         </div>
       )}
     </section>

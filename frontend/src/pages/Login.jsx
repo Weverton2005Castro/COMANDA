@@ -39,13 +39,6 @@ export default function Login() {
         <button className="btn primary full" disabled={loading} type="submit">
           {loading ? 'Entrando...' : 'Entrar'}
         </button>
-        <div className="login-help">
-          <strong>Acessos de teste</strong>
-          <span>Admin: admin@restaurante.com</span>
-          <span>Garcom: joao@restaurante.com</span>
-          <span>Gestor: maria@restaurante.com</span>
-          <span>Senha: password</span>
-        </div>
       </form>
     </main>
   );
