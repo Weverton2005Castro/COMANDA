@@ -16,7 +16,7 @@ const router = Router();
 router.use(auth);
 router.get('/financeiro/dia', permit('gestor', 'admin'), financeiroDia);
 router.get('/mesa/:mesaId/ativa', getComandaAtivaByMesa);
-router.get('/', permit('gestor', 'admin'), listComandas);
+router.get('/', permit('gestor', 'admin',), listComandas);
 router.post('/', permit('garcom', 'admin'), createComanda);
 router.post('/:id/itens', permit('garcom', 'admin'), addItens);
 router.delete('/:id/itens/:itemId', permit('garcom', 'admin'), deleteItem);

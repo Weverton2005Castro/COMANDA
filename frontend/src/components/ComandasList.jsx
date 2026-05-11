@@ -45,7 +45,7 @@ export default function ComandasList() {
     [comandas]
   );
 
-  async function setStatus(comanda, status) {
+  async function setStatus(comanda, status,) {
     try {
       await api.put(`/comandas/${comanda.id}/status`, { status });
       showToast('Status atualizado.', 'success');
@@ -69,6 +69,55 @@ export default function ComandasList() {
                 </div>
                 <span>Mesa {comanda.mesa?.numero}</span>
                 <span>{comanda.garcom?.nome}</span>
+                <div
+                  style={{
+                    marginTop: '10px',
+                    marginBottom: '10px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '6px'
+                  }}
+                >
+                  {comanda.itens?.map((item) => (
+                    <div
+                      key={item.id}
+                      style={{
+                        padding: '8px',
+                        borderRadius: '8px',
+                        background: '#f5f5f5',
+                        fontSize: '14px'
+                      }}
+                    >
+                      <strong>
+                        {item.quantidade}x {item.produto?.nome}
+                      </strong>
+
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          marginTop: '4px'
+                        }}
+                      >
+                        <span>
+                          {Number(item.preco_unitario)
+                            .toLocaleString('pt-BR', {
+                              style: 'currency',
+                              currency: 'BRL'
+                            })}
+                        </span>
+
+                        <b>
+                          {Number(item.subtotal)
+                            .toLocaleString('pt-BR', {
+                              style: 'currency',
+                              currency: 'BRL'
+                            })}
+                        </b>
+                      </div>
+                    </div>
+                  ))}
+                </div>
                 <b>{Number(comanda.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</b>
                 {comanda.status === 'pendente' && (
                   <button className="btn warning full" onClick={() => setStatus(comanda, 'em_preparo')} type="button">

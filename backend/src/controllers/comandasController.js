@@ -29,38 +29,76 @@ export const listComandas = asyncHandler(async (req, res) => {
 });
 
 export const getComandaAtivaByMesa = asyncHandler(async (req, res) => {
+
   const { data, error } = await supabase
     .from('comandas')
     .select(comandaSelect)
     .eq('mesa_id', req.params.mesaId)
     .neq('status', 'pago')
-    .maybeSingle();
+    .order('created_at', { ascending: false });
+  if (error) {
+    throw badRequest(error.message);
+  }
 
-  if (error) throw badRequest(error.message);
-  res.json(data);
+  res.json(data[0] || null);
 });
 
 export const createComanda = asyncHandler(async (req, res) => {
-  const { mesa_id, itens = [] } = req.body;
-  if (!mesa_id) throw badRequest('mesa_id e obrigatorio');
 
+  const { mesa_id, itens = [] } = req.body;
+
+  if (!mesa_id) {
+    throw badRequest('mesa_id e obrigatorio');
+  }
+
+  // VERIFICA SE JA EXISTE COMANDA ATIVA
+  const { data: existente, error: errorExistente } = await supabase
+    .from('comandas')
+    .select(comandaSelect)
+    .eq('mesa_id', mesa_id)
+    .neq('status', 'pago')
+    .maybeSingle();
+
+  if (errorExistente) {
+    throw badRequest(errorExistente.message);
+  }
+
+  // SE EXISTIR, RETORNA ELA
+  if (existente) {
+    return res.json(existente);
+  }
+
+  // CRIA NOVA COMANDA
   const { data: created, error } = await supabase
     .from('comandas')
-    .insert({ mesa_id, garcom_id: req.user.id, status: 'pendente', total: 0 })
+    .insert({
+      mesa_id,
+      garcom_id: req.user.id,
+      status: 'pendente',
+      total: 0
+    })
     .select('*')
     .single();
 
-  if (error) throw badRequest(error.message);
+  if (error) {
+    throw badRequest(error.message);
+  }
 
   const numeroComanda = formatComandaNumber(created.id);
-  await supabase.from('comandas').update({ numero_comanda: numeroComanda }).eq('id', created.id);
+
+  await supabase
+    .from('comandas')
+    .update({ numero_comanda: numeroComanda })
+    .eq('id', created.id);
 
   if (itens.length) {
     await insertItens(created.id, itens);
   }
 
   const comanda = await getComanda(created.id);
+
   req.io.emit('comanda_criada', comanda);
+
   res.status(201).json(comanda);
 });
 
