@@ -26,7 +26,7 @@ export default function Login() {
   return (
     <main className="login-page">
       <form className="login-card" onSubmit={handleSubmit}>
-        <h1> sistema de comanda: THE CHEF</h1>
+        <h1> sistema de comanda</h1>
         <label>
           Email
           <input name="email" type="text" value={form.email} onChange={updateField} required />
