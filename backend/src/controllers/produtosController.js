@@ -2,7 +2,7 @@ import { supabase } from '../config/supabase.js';
 import { asyncHandler, badRequest, notFound } from '../utils/errors.js';
 
 export const listProdutos = asyncHandler(async (req, res) => {
-  const { data, error } = await supabase.from('produtos').select('*').order('categoria').order('nome');
+  const { data, error } = await supabase.from('produtos').select('*').eq('tenant_id', req.user.tenant_id).order('categoria').order('nome');
   if (error) throw badRequest(error.message);
   res.json(data);
 });
@@ -11,7 +11,7 @@ export const createProduto = asyncHandler(async (req, res) => {
   const { nome, preco, categoria, descricao, disponivel = true } = req.body;
   const { data, error } = await supabase
     .from('produtos')
-    .insert({ nome, preco, categoria, descricao, disponivel })
+    .insert({ nome, preco, categoria, descricao, disponivel, tenant_id: req.user.tenant_id })
     .select('*')
     .single();
   if (error) throw badRequest(error.message);
@@ -24,6 +24,7 @@ export const updateProduto = asyncHandler(async (req, res) => {
     .from('produtos')
     .update({ nome, preco, categoria, descricao, disponivel })
     .eq('id', req.params.id)
+    .eq('tenant_id', req.user.tenant_id)
     .select('*')
     .single();
   if (error) throw notFound(error.message);
@@ -31,7 +32,7 @@ export const updateProduto = asyncHandler(async (req, res) => {
 });
 
 export const deleteProduto = asyncHandler(async (req, res) => {
-  const { error } = await supabase.from('produtos').delete().eq('id', req.params.id);
+  const { error } = await supabase.from('produtos').delete().eq('id', req.params.id).eq('tenant_id', req.user.tenant_id);
   if (error) throw badRequest(error.message);
   res.status(204).send();
 });

@@ -17,15 +17,15 @@ Aplicacao full-stack para restaurante com frontend 100% React, backend Node.js/E
 ## Banco de dados
 
 1. Abra o SQL Editor do Supabase.
-2. Execute o arquivo `supabase/schema.sql`.
-3. Copie a URL do projeto e a service role key para o `.env` do backend.
+2. Para uma instalação nova, execute `supabase/schema.sql`.
+3. Para uma base já criada pelo projeto antigo, execute uma única vez `supabase/migrations/20260921_multi_tenant_onboarding.sql`.
+4. Copie a URL do projeto e a service role key para o `.env` do backend.
 
-Usuarios iniciais:
+Cada restaurante é um tenant. As entidades operacionais e os eventos em tempo real são filtrados pelo `tenant_id` do usuário autenticado. O backend usa a service role; o RLS do banco mantém o acesso direto pelo navegador bloqueado.
 
-- Admin: `admin@restaurante.com`
-- Garcom: `joao@restaurante.com`
-- Gestor: `maria@restaurante.com`
-- Senha: `password`
+## Onboarding
+
+O acesso inicial é feito em `/cadastro`: criação da conta de administrador e do restaurante, cadastro opcional das mesas e dos primeiros itens do cardápio. Depois disso, o administrador pode gerir mesas, cardápio e equipe pelo painel.
 
 ## Backend
 
@@ -93,6 +93,8 @@ VITE_SOCKET_URL=https://seu-backend.com
 ## Rotas principais
 
 - `POST /api/auth/login`
+- `POST /api/auth/onboarding`
+- `POST /api/auth/onboarding/complete`
 - `POST /api/auth/register`
 - `GET /api/mesas`
 - `POST /api/mesas`

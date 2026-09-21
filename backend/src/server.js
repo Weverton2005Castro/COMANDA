@@ -3,16 +3,17 @@ import cors from 'cors';
 import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
+import jwt from 'jsonwebtoken';
 import authRoutes from './routes/authRoutes.js';
 import mesasRoutes from './routes/mesasRoutes.js';
 import produtosRoutes from './routes/produtosRoutes.js';
 import comandasRoutes from './routes/comandasRoutes.js';
 import usuariosRoutes from './routes/usuariosRoutes.js';
-
+import { isSupabaseConfigured } from './config/supabase.js';
 const app = express();
 const isVercel = Boolean(process.env.VERCEL);
 const server = isVercel ? null : http.createServer(app);
-const defaultOrigins = ['http://localhost:3000', 'http://localhost:3001'];
+const defaultOrigins = ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173'];
 const allowedOrigins = (process.env.CLIENT_URL || '')
   .split(',')
   .map((origin) => origin.trim())
@@ -38,7 +39,7 @@ const corsOptions = {
 
 const io = server
   ? new Server(server, { cors: corsOptions })
-  : { emit() {} };
+  : { emit() { }, to() { return this; } };
 
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -48,6 +49,15 @@ app.use((req, res, next) => {
 });
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));
+app.use('/api', (req, res, next) => {
+  if (!isSupabaseConfigured) {
+    return res.status(503).json({
+      message: 'Banco de dados nao configurado. Defina SUPABASE_URL e SUPABASE_SERVICE_KEY no arquivo .env.'
+    });
+  }
+
+  next();
+});
 app.use('/api/auth', authRoutes);
 app.use('/api/mesas', mesasRoutes);
 app.use('/api/produtos', produtosRoutes);
@@ -55,7 +65,19 @@ app.use('/api/comandas', comandasRoutes);
 app.use('/api/usuarios', usuariosRoutes);
 
 if (server) {
+  io.use((socket, next) => {
+    try {
+      const token = socket.handshake.auth?.token;
+      const payload = jwt.verify(token, process.env.JWT_SECRET);
+      if (!payload.tenant_id) throw new Error('Tenant ausente');
+      socket.tenantId = payload.tenant_id;
+      next();
+    } catch {
+      next(new Error('Nao autorizado'));
+    }
+  });
   io.on('connection', (socket) => {
+    socket.join(`tenant:${socket.tenantId}`);
     console.log(`Socket conectado: ${socket.id}`);
     socket.on('disconnect', () => console.log(`Socket desconectado: ${socket.id}`));
   });

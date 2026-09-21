@@ -18,7 +18,8 @@ export function SocketProvider({ children }) {
     }
 
     const instance = io(socketURL, {
-      transports: ['websocket']
+      transports: ['websocket'],
+      auth: { token: localStorage.getItem('token') }
     });
 
     setSocket(instance);

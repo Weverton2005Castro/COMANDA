@@ -23,13 +23,26 @@ export function AuthProvider({ children }) {
     }
   }
 
+  async function onboarding(payload) {
+    setLoading(true);
+    try {
+      const { data } = await api.post('/auth/onboarding', payload);
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      setUser(data.user);
+      return data.user;
+    } finally {
+      setLoading(false);
+    }
+  }
+
   function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setUser(null);
   }
 
-  const value = useMemo(() => ({ user, loading, login, logout }), [user, loading]);
+  const value = useMemo(() => ({ user, loading, login, onboarding, logout }), [user, loading]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

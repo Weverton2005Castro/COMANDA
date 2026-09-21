@@ -5,7 +5,8 @@ import { asyncHandler, badRequest, notFound } from '../utils/errors.js';
 export const listUsuarios = asyncHandler(async (req, res) => {
   const { data, error } = await supabase
     .from('usuarios')
-    .select('id,nome,email,tipo,created_at')
+    .select('id,tenant_id,nome,email,tipo,created_at')
+    .eq('tenant_id', req.user.tenant_id)
     .order('nome');
   if (error) throw badRequest(error.message);
   res.json(data);
@@ -23,7 +24,8 @@ export const updateUsuario = asyncHandler(async (req, res) => {
     .from('usuarios')
     .update(payload)
     .eq('id', req.params.id)
-    .select('id,nome,email,tipo,created_at')
+    .eq('tenant_id', req.user.tenant_id)
+    .select('id,tenant_id,nome,email,tipo,created_at')
     .single();
 
   if (error) throw notFound(error.message);
@@ -31,7 +33,7 @@ export const updateUsuario = asyncHandler(async (req, res) => {
 });
 
 export const deleteUsuario = asyncHandler(async (req, res) => {
-  const { error } = await supabase.from('usuarios').delete().eq('id', req.params.id);
+  const { error } = await supabase.from('usuarios').delete().eq('id', req.params.id).eq('tenant_id', req.user.tenant_id);
   if (error) throw badRequest(error.message);
   res.status(204).send();
 });

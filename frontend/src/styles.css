@@ -71,6 +71,11 @@ th {
   font-weight: 700;
 }
 
+.form-stack {
+  display: grid;
+  gap: 12px;
+}
+
 .login-help {
   display: grid;
   gap: 5px;

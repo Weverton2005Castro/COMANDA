@@ -13,8 +13,9 @@ export async function auth(req, res, next) {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
     const { data: user, error } = await supabase
       .from('usuarios')
-      .select('id,nome,email,tipo,created_at')
+      .select('id,tenant_id,nome,email,tipo,created_at')
       .eq('id', payload.id)
+      .eq('tenant_id', payload.tenant_id)
       .single();
 
     if (error || !user) {

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
 
 export default function Login() {
@@ -39,6 +40,7 @@ export default function Login() {
         <button className="btn primary full" disabled={loading} type="submit">
           {loading ? 'Entrando...' : 'Entrar'}
         </button>
+        <p className="login-help">Ainda não tem uma conta? <Link to="/cadastro">Criar restaurante</Link></p>
       </form>
     </main>
   );

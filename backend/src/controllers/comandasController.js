@@ -12,8 +12,8 @@ const comandaSelect = `
   )
 `;
 
-async function getComanda(id) {
-  const { data, error } = await supabase.from('comandas').select(comandaSelect).eq('id', id).single();
+async function getComanda(id, tenantId) {
+  const { data, error } = await supabase.from('comandas').select(comandaSelect).eq('id', id).eq('tenant_id', tenantId).single();
   if (error || !data) throw notFound('Comanda nao encontrada');
   return data;
 }
@@ -22,6 +22,7 @@ export const listComandas = asyncHandler(async (req, res) => {
   const { data, error } = await supabase
     .from('comandas')
     .select(comandaSelect)
+    .eq('tenant_id', req.user.tenant_id)
     .order('created_at', { ascending: false });
 
   if (error) throw badRequest(error.message);
@@ -34,6 +35,7 @@ export const getComandaAtivaByMesa = asyncHandler(async (req, res) => {
     .from('comandas')
     .select(comandaSelect)
     .eq('mesa_id', req.params.mesaId)
+    .eq('tenant_id', req.user.tenant_id)
     .neq('status', 'pago')
     .order('created_at', { ascending: false });
   if (error) {
@@ -51,11 +53,16 @@ export const createComanda = asyncHandler(async (req, res) => {
     throw badRequest('mesa_id e obrigatorio');
   }
 
+  const { data: mesa, error: mesaError } = await supabase
+    .from('mesas').select('id').eq('id', mesa_id).eq('tenant_id', req.user.tenant_id).maybeSingle();
+  if (mesaError || !mesa) throw badRequest('Mesa inexistente neste restaurante');
+
   // VERIFICA SE JA EXISTE COMANDA ATIVA
   const { data: existente, error: errorExistente } = await supabase
     .from('comandas')
     .select(comandaSelect)
     .eq('mesa_id', mesa_id)
+    .eq('tenant_id', req.user.tenant_id)
     .neq('status', 'pago')
     .maybeSingle();
 
@@ -74,6 +81,7 @@ export const createComanda = asyncHandler(async (req, res) => {
     .insert({
       mesa_id,
       garcom_id: req.user.id,
+      tenant_id: req.user.tenant_id,
       status: 'pendente',
       total: 0
     })
@@ -89,25 +97,27 @@ export const createComanda = asyncHandler(async (req, res) => {
   await supabase
     .from('comandas')
     .update({ numero_comanda: numeroComanda })
-    .eq('id', created.id);
+    .eq('id', created.id)
+    .eq('tenant_id', req.user.tenant_id);
 
   if (itens.length) {
-    await insertItens(created.id, itens);
+    await insertItens(created.id, itens, req.user.tenant_id);
   }
 
-  const comanda = await getComanda(created.id);
+  const comanda = await getComanda(created.id, req.user.tenant_id);
 
-  req.io.emit('comanda_criada', comanda);
+  req.io.to(`tenant:${req.user.tenant_id}`).emit('comanda_criada', comanda);
 
   res.status(201).json(comanda);
 });
 
-async function insertItens(comandaId, itens) {
+async function insertItens(comandaId, itens, tenantId) {
   const productIds = itens.map((item) => item.produto_id);
   const { data: produtos, error } = await supabase
     .from('produtos')
     .select('*')
     .in('id', productIds)
+    .eq('tenant_id', tenantId)
     .eq('disponivel', true);
 
   if (error) throw badRequest(error.message);
@@ -120,6 +130,7 @@ async function insertItens(comandaId, itens) {
 
     return {
       comanda_id: comandaId,
+      tenant_id: tenantId,
       produto_id: produto.id,
       quantidade,
       preco_unitario: precoUnitario
@@ -134,29 +145,30 @@ export const addItens = asyncHandler(async (req, res) => {
   const { itens = [] } = req.body;
   if (!itens.length) throw badRequest('Informe ao menos um item');
 
-  const comanda = await getComanda(req.params.id);
+  const comanda = await getComanda(req.params.id, req.user.tenant_id);
   if (comanda.status === 'pago') throw badRequest('Comanda paga nao pode receber itens');
 
-  await insertItens(req.params.id, itens);
-  const updated = await getComanda(req.params.id);
-  req.io.emit('comanda_atualizada', updated);
+  await insertItens(req.params.id, itens, req.user.tenant_id);
+  const updated = await getComanda(req.params.id, req.user.tenant_id);
+  req.io.to(`tenant:${req.user.tenant_id}`).emit('comanda_atualizada', updated);
   res.status(201).json(updated);
 });
 
 export const deleteItem = asyncHandler(async (req, res) => {
-  const comanda = await getComanda(req.params.id);
+  const comanda = await getComanda(req.params.id, req.user.tenant_id);
   if (comanda.status === 'pago') throw badRequest('Comanda paga nao pode ser alterada');
 
   const { error } = await supabase
     .from('itens_comanda')
     .delete()
     .eq('id', req.params.itemId)
-    .eq('comanda_id', req.params.id);
+    .eq('comanda_id', req.params.id)
+    .eq('tenant_id', req.user.tenant_id);
 
   if (error) throw badRequest(error.message);
 
-  const updated = await getComanda(req.params.id);
-  req.io.emit('comanda_atualizada', updated);
+  const updated = await getComanda(req.params.id, req.user.tenant_id);
+  req.io.to(`tenant:${req.user.tenant_id}`).emit('comanda_atualizada', updated);
   res.json(updated);
 });
 
@@ -166,13 +178,14 @@ export const updateStatus = asyncHandler(async (req, res) => {
     .from('comandas')
     .update({ status })
     .eq('id', req.params.id)
+    .eq('tenant_id', req.user.tenant_id)
     .select('*')
     .single();
 
   if (error) throw badRequest(error.message);
 
-  const updated = await getComanda(data.id);
-  req.io.emit('comanda_status_atualizado', updated);
+  const updated = await getComanda(data.id, req.user.tenant_id);
+  req.io.to(`tenant:${req.user.tenant_id}`).emit('comanda_status_atualizado', updated);
   res.json(updated);
 });
 
@@ -181,13 +194,14 @@ export const pagarComanda = asyncHandler(async (req, res) => {
     .from('comandas')
     .update({ status: 'pago' })
     .eq('id', req.params.id)
+    .eq('tenant_id', req.user.tenant_id)
     .select('*')
     .single();
 
   if (error) throw badRequest(error.message);
 
-  const updated = await getComanda(data.id);
-  req.io.emit('comanda_paga', updated);
+  const updated = await getComanda(data.id, req.user.tenant_id);
+  req.io.to(`tenant:${req.user.tenant_id}`).emit('comanda_paga', updated);
   res.json(updated);
 });
 
@@ -199,6 +213,7 @@ export const financeiroDia = asyncHandler(async (req, res) => {
   const { data: comandas, error } = await supabase
     .from('comandas')
     .select(comandaSelect)
+    .eq('tenant_id', req.user.tenant_id)
     .gte('updated_at', start)
     .lte('updated_at', end)
     .order('updated_at', { ascending: false });
