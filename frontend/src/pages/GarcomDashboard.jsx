@@ -24,14 +24,14 @@ export default function GarcomDashboard() {
 
   return (
     <div>
-      <Header title="Painel do Garcom" />
+      <Header title="painel do garçom" />
       <main className="container">
         <MesaSelector selectedMesa={mesa} onSelect={selectMesa} />
         {mesa && (
           <div className="dashboard-grid">
             <div className="stack">
               <section className="card mesa-summary">
-                <h2>Mesa {mesa.numero}</h2>
+                <h2>mesa {mesa.numero}</h2>
                 <StatusBadge status={mesa.status} />
               </section>
               {/* <Cardapio mesa={mesa} comanda={comanda} onComandaChange={setComanda} /> */}

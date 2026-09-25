@@ -9,12 +9,12 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <Header title="Painel do Administrador" />
+      <Header title="painel do administrador" />
       <main className="container">
         <div className="tabs page-tabs">
-          <button className={tab === 'mesas' ? 'active' : ''} onClick={() => setTab('mesas')} type="button">Mesas</button>
-          <button className={tab === 'produtos' ? 'active' : ''} onClick={() => setTab('produtos')} type="button">Cardapio</button>
-          <button className={tab === 'usuarios' ? 'active' : ''} onClick={() => setTab('usuarios')} type="button">Usuarios</button>
+          <button className={tab === 'mesas' ? 'active' : ''} onClick={() => setTab('mesas')} type="button">mesas</button>
+          <button className={tab === 'produtos' ? 'active' : ''} onClick={() => setTab('produtos')} type="button">cardápio</button>
+          <button className={tab === 'usuarios' ? 'active' : ''} onClick={() => setTab('usuarios')} type="button">usuários</button>
         </div>
         {tab === 'mesas' && <MesasManager />}
         {tab === 'produtos' && <ProdutosManager />}

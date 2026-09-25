@@ -29,7 +29,7 @@ export default function MesaSelector({ selectedMesa, onSelect }) {
 
   return (
     <section className="panel-section">
-      <h2>Selecione a Mesa</h2>
+      <h2>selecione a mesa</h2>
       <div className="mesa-grid">
         {mesas.map((mesa) => (
           <button
@@ -39,7 +39,7 @@ export default function MesaSelector({ selectedMesa, onSelect }) {
             onClick={() => onSelect(mesa)}
             type="button"
           >
-            <strong>Mesa {mesa.numero}</strong>
+            <strong>mesa {mesa.numero}</strong>
             <StatusBadge status={mesa.status} />
           </button>
         ))}

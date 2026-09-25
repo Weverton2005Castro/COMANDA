@@ -30,36 +30,36 @@ export default function MesasManager() {
       editing ? await api.put(`/mesas/${editing}`, form) : await api.post('/mesas', form);
       setForm(initialForm);
       setEditing(null);
-      showToast('Mesa salva.', 'success');
+      showToast('mesa salva.', 'success');
       load();
     } catch {
-      showToast('Nao foi possivel salvar a mesa.', 'error');
+      showToast('não foi possível salvar a mesa.', 'error');
     }
   }
 
   async function remove(id) {
-    if (!(await confirm({ title: 'Deletar mesa', message: 'Deseja deletar esta mesa?' }))) return;
+    if (!(await confirm({ title: 'deletar mesa', message: 'deseja deletar esta mesa?' }))) return;
     await api.delete(`/mesas/${id}`);
-    showToast('Mesa deletada.', 'success');
+    showToast('mesa deletada.', 'success');
     load();
   }
 
   return (
     <section className="card">
       <Confirm />
-      <h2>Mesas</h2>
+      <h2>mesas</h2>
       <form className="manager-form" onSubmit={submit}>
-        <input name="numero" placeholder="Numero" value={form.numero} onChange={update} required />
+        <input name="numero" placeholder="número" value={form.numero} onChange={update} required />
         <select name="status" value={form.status} onChange={update}>
-          <option value="disponivel">Disponivel</option>
-          <option value="ocupada">Ocupada</option>
-          <option value="manutencao">Manutencao</option>
-          <option value="esperando_pagamento">Esperando Pagamento</option>
+          <option value="disponivel">disponível</option>
+          <option value="ocupada">ocupada</option>
+          <option value="manutencao">manutenção</option>
+          <option value="esperando_pagamento">esperando pagamento</option>
         </select>
-        <button className="btn primary" type="submit">{editing ? 'Atualizar' : 'Criar'}</button>
+        <button className="btn primary" type="submit">{editing ? 'atualizar' : 'criar'}</button>
       </form>
       <table>
-        <thead><tr><th>ID</th><th>Numero</th><th>Status</th><th>Acoes</th></tr></thead>
+        <thead><tr><th>id</th><th>número</th><th>status</th><th>ações</th></tr></thead>
         <tbody>
           {mesas.map((mesa) => (
             <tr key={mesa.id}>
@@ -67,8 +67,8 @@ export default function MesasManager() {
               <td>{mesa.numero}</td>
               <td><StatusBadge status={mesa.status} /></td>
               <td className="table-actions">
-                <button className="btn warning small" onClick={() => { setEditing(mesa.id); setForm({ numero: mesa.numero, status: mesa.status }); }} type="button">Editar</button>
-                <button className="btn danger small" onClick={() => remove(mesa.id)} type="button">Deletar</button>
+                <button className="btn warning small" onClick={() => { setEditing(mesa.id); setForm({ numero: mesa.numero, status: mesa.status }); }} type="button">editar</button>
+                <button className="btn danger small" onClick={() => remove(mesa.id)} type="button">deletar</button>
               </td>
             </tr>
           ))}

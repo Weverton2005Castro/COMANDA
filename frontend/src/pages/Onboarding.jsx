@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
+import TicketCard from '../components/TicketCard.jsx';
+import StampButton from '../components/StampButton.jsx';
 
 const emptyProduct = { nome: '', preco: '', categoria: 'prato', descricao: '' };
 
@@ -27,7 +29,7 @@ export default function Onboarding() {
       await onboarding(account);
       setStep(2);
     } catch (requestError) {
-      setError(requestError.response?.data?.message || 'Não foi possível criar sua conta.');
+      setError(requestError.response?.data?.message || 'não foi possível criar sua conta.');
     }
   }
 
@@ -39,7 +41,7 @@ export default function Onboarding() {
       await Promise.all(numbers.map((numero) => api.post('/mesas', { numero })));
       setStep(3);
     } catch (requestError) {
-      setError(requestError.response?.data?.message || 'Não foi possível cadastrar as mesas.');
+      setError(requestError.response?.data?.message || 'não foi possível cadastrar as mesas.');
     } finally {
       setSaving(false);
     }
@@ -53,7 +55,7 @@ export default function Onboarding() {
       setProducts((current) => [...current, payload]);
       setProduct(emptyProduct);
     } catch (requestError) {
-      setError(requestError.response?.data?.message || 'Não foi possível cadastrar o item.');
+      setError(requestError.response?.data?.message || 'não foi possível cadastrar o item.');
     }
   }
 
@@ -69,35 +71,64 @@ export default function Onboarding() {
 
   return (
     <main className="login-page">
-      <section className="login-card onboarding-card">
-        <div><h1>Comece seu restaurante</h1><p className="login-help">Etapa {step} de 3</p></div>
+      <TicketCard 
+        number="NOVO" 
+        tilted={true}
+        className="login-card onboarding-card"
+      >
+        <div><h1>comece seu restaurante</h1><p className="tagline">etapa {step} de 3</p></div>
         {step === 1 && <form onSubmit={createAccount} className="form-stack">
-          <input name="restaurante" placeholder="Nome do restaurante" value={account.restaurante} onChange={update(setAccount)} required />
-          <input name="nome" placeholder="Seu nome" value={account.nome} onChange={update(setAccount)} required />
-          <input name="email" type="email" placeholder="Seu email" value={account.email} onChange={update(setAccount)} required />
-          <input name="senha" type="password" minLength="8" placeholder="Crie uma senha (mínimo 8 caracteres)" value={account.senha} onChange={update(setAccount)} required />
-          <button className="btn primary full" disabled={loading}>Criar conta e restaurante</button>
+          <div className="field">
+            <label>nome do restaurante</label>
+            <input name="restaurante" placeholder="nome do restaurante" value={account.restaurante} onChange={update(setAccount)} required />
+          </div>
+          <div className="field">
+            <label>seu nome</label>
+            <input name="nome" placeholder="seu nome" value={account.nome} onChange={update(setAccount)} required />
+          </div>
+          <div className="field">
+            <label>seu email</label>
+            <input name="email" type="email" placeholder="seu email" value={account.email} onChange={update(setAccount)} required />
+          </div>
+          <div className="field">
+            <label>senha</label>
+            <input name="senha" type="password" minLength="8" placeholder="crie uma senha (mínimo 8 caracteres)" value={account.senha} onChange={update(setAccount)} required />
+          </div>
+          <StampButton disabled={loading} stamped={loading}>criar conta e restaurante</StampButton>
         </form>}
         {step === 2 && <div className="form-stack">
-          <p>Cadastre as mesas separadas por vírgula. Ex.: 1, 2, 3, 10.</p>
+          <p>cadastre as mesas separadas por vírgula. ex.: 1, 2, 3, 10.</p>
           <input value={tableNumbers} onChange={(event) => setTableNumbers(event.target.value)} placeholder="1, 2, 3" />
-          <button className="btn primary full" onClick={saveTables} disabled={saving}>Salvar mesas e continuar</button>
-          <button className="btn secondary full" onClick={() => setStep(3)} type="button">Pular por enquanto</button>
+          <StampButton onClick={saveTables} disabled={saving} stamped={saving}>salvar mesas e continuar</StampButton>
+          <button className="btn secondary full" onClick={() => setStep(3)} type="button">pular por enquanto</button>
         </div>}
         {step === 3 && <div className="form-stack">
-          <p>Adicione os primeiros itens do cardápio. Você poderá editar tudo depois.</p>
+          <p>adicione os primeiros itens do cardápio. você poderá editar tudo depois.</p>
           <form onSubmit={addProduct} className="form-stack">
-            <input name="nome" placeholder="Nome do item" value={product.nome} onChange={update(setProduct)} required />
-            <input name="preco" type="number" min="0" step="0.01" placeholder="Preço" value={product.preco} onChange={update(setProduct)} required />
-            <select name="categoria" value={product.categoria} onChange={update(setProduct)}><option value="prato">Prato</option><option value="bebida">Bebida</option><option value="extra">Extra</option></select>
-            <input name="descricao" placeholder="Descrição (opcional)" value={product.descricao} onChange={update(setProduct)} />
-            <button className="btn secondary full" type="submit">Adicionar item</button>
+            <div className="field">
+              <label>nome do item</label>
+              <input name="nome" placeholder="nome do item" value={product.nome} onChange={update(setProduct)} required />
+            </div>
+            <div className="field">
+              <label>preço</label>
+              <input name="preco" type="number" min="0" step="0.01" placeholder="preço" value={product.preco} onChange={update(setProduct)} required />
+            </div>
+            <div className="field select-wrap">
+              <label>categoria</label>
+              <select name="categoria" value={product.categoria} onChange={update(setProduct)}><option value="prato">prato</option><option value="bebida">bebida</option><option value="extra">extra</option></select>
+            </div>
+            <div className="field">
+              <label>descrição (opcional)</label>
+              <input name="descricao" placeholder="descrição (opcional)" value={product.descricao} onChange={update(setProduct)} />
+            </div>
+            <button className="btn secondary full" type="submit">adicionar item</button>
           </form>
           {products.length > 0 && <span>{products.length} item(ns) adicionado(s).</span>}
-          <button className="btn primary full" onClick={finish} disabled={saving}>Concluir e abrir painel</button>
+          <StampButton onClick={finish} disabled={saving} stamped={saving}>concluir e abrir painel</StampButton>
         </div>}
         {error && <div className="error-message">{error}</div>}
-      </section>
+        <p className="foot">configuração inicial do sistema</p>
+      </TicketCard>
     </main>
   );
 }

@@ -5,10 +5,10 @@ import { useToast } from '../contexts/ToastContext.jsx';
 import StatusBadge from './StatusBadge.jsx';
 
 const groups = [
-  { status: 'pendente', title: '🟡 Pendentes' },
-  { status: 'em_preparo', title: '🔵 Em Preparo' },
-  { status: 'pronto', title: '🟢 Prontos' },
-  { status: 'pago', title: '⚫ Pagos' }
+  { status: 'pendente', title: 'pendentes' },
+  { status: 'em_preparo', title: 'em preparo' },
+  { status: 'pronto', title: 'prontos' },
+  { status: 'pago', title: 'pagos' }
 ];
 
 export default function ComandasList() {
@@ -48,10 +48,10 @@ export default function ComandasList() {
   async function setStatus(comanda, status,) {
     try {
       await api.put(`/comandas/${comanda.id}/status`, { status });
-      showToast('Status atualizado.', 'success');
+      showToast('status atualizado.', 'success');
       loadComandas();
     } catch {
-      showToast('Nao foi possivel atualizar o status.', 'error');
+      showToast('não foi possível atualizar o status.', 'error');
     }
   }
 
@@ -67,7 +67,7 @@ export default function ComandasList() {
                   <strong>{comanda.numero_comanda || `#${comanda.id}`}</strong>
                   <StatusBadge status={comanda.status} />
                 </div>
-                <span>Mesa {comanda.mesa?.numero}</span>
+                <span>mesa {comanda.mesa?.numero}</span>
                 <span>{comanda.garcom?.nome}</span>
                 <div
                   style={{
@@ -83,8 +83,8 @@ export default function ComandasList() {
                       key={item.id}
                       style={{
                         padding: '8px',
-                        borderRadius: '8px',
-                        background: '#f5f5f5',
+                        borderRadius: '2px',
+                        background: 'rgba(255, 255, 255, 0.3)',
                         fontSize: '14px'
                       }}
                     >
@@ -121,12 +121,12 @@ export default function ComandasList() {
                 <b>{Number(comanda.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</b>
                 {comanda.status === 'pendente' && (
                   <button className="btn warning full" onClick={() => setStatus(comanda, 'em_preparo')} type="button">
-                    Iniciar Preparo
+                    iniciar preparo
                   </button>
                 )}
                 {comanda.status === 'em_preparo' && (
                   <button className="btn success full" onClick={() => setStatus(comanda, 'pronto')} type="button">
-                    Marcar como Pronto
+                    marcar como pronto
                   </button>
                 )}
               </article>

@@ -1,13 +1,13 @@
 import React from 'react';
 const labels = {
-  pendente: 'Pendente',
-  em_preparo: 'Em Preparo',
-  pronto: 'Pronto',
-  pago: 'Pago',
-  esperando_pagamento: 'Esperando Pagamento',
-  disponivel: 'Disponivel',
-  ocupada: 'Ocupada',
-  manutencao: 'Manutencao'
+  pendente: 'pendente',
+  em_preparo: 'em preparo',
+  pronto: 'pronto',
+  pago: 'pago',
+  esperando_pagamento: 'esperando pagamento',
+  disponivel: 'disponível',
+  ocupada: 'ocupada',
+  manutencao: 'manutenção'
 };
 
 export default function StatusBadge({ status }) {

@@ -68,13 +68,13 @@ export default function ComandaAtual({ mesa, comanda, onComandaChange }) {
     }
   }
 
-  if (loading) return <section className="card"><p>Carregando comanda...</p></section>;
+  if (loading) return <section className="card"><p>carregando comanda...</p></section>;
 
   if (!comanda) {
     return (
       <section className="card empty-state">
-        <h2>Comanda Atual</h2>
-        <p>Nenhuma comanda ativa para esta mesa.</p>
+        <h2>comanda atual</h2>
+        <p>nenhuma comanda ativa para esta mesa.</p>
       </section>
     );
   }
@@ -92,8 +92,8 @@ export default function ComandaAtual({ mesa, comanda, onComandaChange }) {
         <StatusBadge status={comanda.status} />
       </div>
       <div className="meta-list">
-        <span>Mesa {mesa.numero}</span>
-        <span>Garcom: {comanda.garcom?.nome || '-'}</span>
+        <span>mesa {mesa.numero}</span>
+        <span>garçom: {comanda.garcom?.nome || '-'}</span>
       </div>
       <div className="items-list">
         {comanda.itens?.map((item) => (
@@ -106,18 +106,18 @@ export default function ComandaAtual({ mesa, comanda, onComandaChange }) {
             </div>
             <div className="item-actions">
               <b>{Number(item.subtotal).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</b>
-              <button className="btn danger small" onClick={() => removeItem(item)} type="button">Remover</button>
+              <button className="btn danger small" onClick={() => removeItem(item)} type="button">remover</button>
             </div>
           </div>
         ))}
       </div>
       <div className="total-line">
-        <span>Total</span>
+        <span>total</span>
         <strong>{Number(comanda.total).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong>
       </div>
       {canPay && (
         <button className="btn success full" onClick={pagar} type="button">
-          Finalizar Pagamento
+          finalizar pagamento
         </button>
       )}
     </section>

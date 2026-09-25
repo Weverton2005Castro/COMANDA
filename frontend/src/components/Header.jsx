@@ -8,10 +8,10 @@ export default function Header({ title }) {
     <header className="app-header">
       <div>
         <h1>{title}</h1>
-        <span>Bem-vindo(a), {user?.nome}</span>
+        <span>bem-vindo(a), {user?.nome}</span>
       </div>
-      <button className="btn secondary" onClick={logout} type="button">
-        Sair
+      <button className="btn secondary small" onClick={logout} type="button">
+        sair
       </button>
     </header>
   );

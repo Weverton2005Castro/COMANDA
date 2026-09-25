@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@700&display=swap');
+
+:root {
+  --counter-1: #1c1a17;
+  --counter-2: #0f0e0c;
+  --paper: #f4efe0;
+  --paper-2: #ece4cf;
+  --ink: #2b241d;
+  --ink-soft: #6b5f4f;
+  --flame: #e2551f;
+  --flame-dark: #b23f16;
+  --brass: #c79a3f;
+  --line: rgba(43, 36, 29, .22);
+  --paper-gradient: linear-gradient(135deg, var(--paper), var(--paper-2));
+  --counter-gradient: radial-gradient(ellipse 900px 500px at 50% 0%, rgba(226, 85, 31, .12), transparent 62%), linear-gradient(180deg, var(--counter-1), var(--counter-2));
+  --ticket-shadow: 0 30px 60px -20px rgba(0, 0, 0, .65);
+}

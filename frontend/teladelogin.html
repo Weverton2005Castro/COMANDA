@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Comanda — Acesso do sistema</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --counter-1:#1c1a17;
+    --counter-2:#0f0e0c;
+    --paper:#f4efe0;
+    --paper-2:#ece4cf;
+    --ink:#2b241d;
+    --ink-soft:#6b5f4f;
+    --flame:#e2551f;
+    --flame-dark:#b23f16;
+    --brass:#c79a3f;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-sizing: border-box;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    min-height:100%;
+    background:
+      radial-gradient(ellipse 900px 600px at 50% 8%, rgba(226,85,31,0.10), transparent 60%),
+      radial-gradient(ellipse 1200px 800px at 50% 100%, rgba(0,0,0,0.5), transparent 60%),
+      linear-gradient(180deg, var(--counter-1), var(--counter-2));
+    font-family:'JetBrains Mono', monospace;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow-x:hidden;
+    padding:32px 16px;
+  }
+  /* steel rail */
+  .rail{
+    position:fixed;
+    top:calc(env(safe-area-inset-top,0px) + 38px);
+    left:0; right:0;
+    height:6px;
+    background:linear-gradient(180deg,#4a4640,#221f1b);
+    box-shadow:0 2px 6px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.06) inset;
+  }
+  .clip{
+    position:fixed;
+    top:calc(env(safe-area-inset-top,0px) + 30px);
+    left:50%;
+    transform:translateX(-50%);
+    width:22px;height:26px;
+    background:linear-gradient(180deg,var(--brass),#8f6a1f);
+    border-radius:3px;
+    box-shadow:0 3px 6px rgba(0,0,0,0.5);
+    z-index:5;
+  }
+  .clip::after{
+    content:"";
+    position:absolute; left:50%; top:100%;
+    width:2px; height:14px;
+    background:#3a3530;
+    transform:translateX(-50%);
+  }
+
+  .scene{
+    position:relative;
+    width:100%;
+    max-width:380px;
+    margin-top:56px;
+  }
+
+  .ticket{
+    position:relative;
+    background:
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.015) 0 1px, transparent 1px 3px),
+      linear-gradient(160deg, var(--paper), var(--paper-2));
+    color:var(--ink);
+    border-radius:2px;
+    padding:34px 30px 26px;
+    box-shadow:
+      0 30px 60px -20px rgba(0,0,0,0.65),
+      0 2px 0 rgba(255,255,255,0.4) inset;
+    transform:rotate(-1.4deg);
+    animation:drop 0.7s cubic-bezier(.2,.9,.25,1.1) both;
+  }
+  @keyframes drop{
+    0%{transform:translateY(-40px) rotate(-1.4deg); opacity:0;}
+    100%{transform:translateY(0) rotate(-1.4deg); opacity:1;}
+  }
+  .ticket::before{
+    content:"";
+    position:absolute; left:50%; top:-11px;
+    transform:translateX(-50%);
+    width:8px;height:16px;
+    background:transparent;
+  }
+  /* perforated bottom edge */
+  .perf{
+    position:absolute; left:0; right:0; bottom:-9px; height:18px;
+    background:radial-gradient(circle 6px at 14px 0, transparent 98%, var(--paper) 100%) repeat-x;
+    background-size:24px 18px;
+    background-color:transparent;
+  }
+  .perf::before{
+    content:"";
+    position:absolute; inset:0;
+    background:var(--counter-1);
+    opacity:0;
+  }
+
+  .stub{
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-size:11px; letter-spacing:.02em; color:var(--ink-soft);
+    border-bottom:1px dashed rgba(43,36,29,0.25);
+    padding-bottom:12px; margin-bottom:20px;
+  }
+  .stub b{color:var(--flame-dark); font-weight:700;}
+
+  .brand{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:28px;
+    letter-spacing:-0.02em;
+    margin:0 0 2px;
+  }
+  .tagline{
+    font-size:12px; color:var(--ink-soft); margin:0 0 22px;
+  }
+
+  label{
+    display:block;
+    font-size:10.5px;
+    color:var(--ink-soft);
+    margin:0 0 6px;
+    letter-spacing:.03em;
+  }
+  .field{margin-bottom:16px;}
+  .field select,
+  .field input{
+    width:100%;
+    font-family:'JetBrains Mono', monospace;
+    font-size:14px;
+    color:var(--ink);
+    background:rgba(255,255,255,0.35);
+    border:1px solid rgba(43,36,29,0.22);
+    border-radius:3px;
+    padding:10px 12px;
+    outline:none;
+    transition:border-color .15s ease, background .15s ease;
+    appearance:none;
+    -webkit-appearance:none;
+  }
+  .field select{cursor:pointer;}
+  .field input::placeholder{color:rgba(43,36,29,0.35);}
+  .field select:focus,
+  .field input:focus{
+    border-color:var(--flame);
+    background:rgba(255,255,255,0.6);
+  }
+  .select-wrap{position:relative;}
+  .select-wrap::after{
+    content:"▾";
+    position:absolute; right:12px; top:50%;
+    transform:translateY(-50%);
+    color:var(--ink-soft); font-size:11px; pointer-events:none;
+  }
+
+  .pw-wrap{position:relative;}
+  .pw-wrap input{padding-right:38px;}
+  .pw-toggle{
+    position:absolute; right:8px; top:50%; transform:translateY(-50%);
+    background:none; border:none; cursor:pointer;
+    color:var(--ink-soft); font-size:11px;
+    font-family:'JetBrains Mono', monospace;
+    padding:4px 6px;
+  }
+  .pw-toggle:hover{color:var(--ink);}
+
+  .row-meta{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:11px; margin:2px 0 24px;
+  }
+  .row-meta a{color:var(--flame-dark); text-decoration:none; border-bottom:1px dotted var(--flame-dark);}
+  .remember{display:flex; align-items:center; gap:6px; color:var(--ink-soft);}
+  .remember input{accent-color:var(--flame);}
+
+  .submit{
+    position:relative;
+    width:100%;
+    border:2px solid var(--flame-dark);
+    background:var(--flame);
+    color:#fff9f0;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:15px;
+    letter-spacing:.02em;
+    padding:13px 16px;
+    border-radius:3px;
+    cursor:pointer;
+    transform:rotate(0.4deg);
+    box-shadow:0 6px 0 var(--flame-dark), 0 10px 18px rgba(0,0,0,0.35);
+    transition:transform .08s ease, box-shadow .08s ease;
+  }
+  .submit:hover{filter:brightness(1.04);}
+  .submit:active,
+  .submit.stamped{
+    transform:translateY(6px) rotate(0.4deg);
+    box-shadow:0 0 0 var(--flame-dark), 0 4px 10px rgba(0,0,0,0.35);
+  }
+  .submit .ok{
+    display:none; align-items:center; justify-content:center; gap:8px;
+  }
+  .submit.stamped .go{display:none;}
+  .submit.stamped .ok{display:flex;}
+
+  .foot{
+    text-align:center; font-size:10px; color:var(--ink-soft);
+    margin-top:18px; letter-spacing:.03em;
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .ticket{animation:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="rail"></div>
+<div class="clip"></div>
+
+<div class="scene">
+  <div class="ticket">
+    <div class="stub">
+      <span>comanda <b>Nº 0842</b></span>
+      <span id="clock">--:--</span>
+    </div>
+
+    <p class="brand">Comanda</p>
+    <p class="tagline">acesso do sistema · unidades cadastradas</p>
+
+    <form id="loginForm">
+      <div class="field select-wrap">
+        <label for="rest">restaurante</label>
+        <select id="rest" required>
+          <option value="" disabled selected>selecione a unidade</option>
+          <option>Trattoria Bella Vista</option>
+          <option>Boteco União</option>
+          <option>Sabor da Terra</option>
+          <option>Cantina do Porto</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="user">usuário</label>
+        <input id="user" type="text" placeholder="ex: joao.garcom" required>
+      </div>
+
+      <div class="field pw-wrap">
+        <label for="pass">senha</label>
+        <input id="pass" type="password" placeholder="••••••••" required>
+        <button type="button" class="pw-toggle" id="pwToggle">ver</button>
+      </div>
+
+      <div class="row-meta">
+        <label class="remember"><input type="checkbox"> lembrar</label>
+        <a href="#" onclick="return false;">esqueci a senha</a>
+      </div>
+
+      <button type="submit" class="submit" id="submitBtn">
+        <span class="go">entrar</span>
+        <span class="ok">✓ comanda aberta</span>
+      </button>
+    </form>
+
+    <p class="foot">impresso pelo sistema de comandas</p>
+    <div class="perf"></div>
+  </div>
+</div>
+
+<script>
+  // clock stub
+  function tick(){
+    const d = new Date();
+    document.getElementById('clock').textContent =
+      d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+  }
+  tick();
+  setInterval(tick, 1000 * 30);
+
+  // show/hide password
+  const pwInput = document.getElementById('pass');
+  const pwToggle = document.getElementById('pwToggle');
+  pwToggle.addEventListener('click', () => {
+    const isPw = pwInput.type === 'password';
+    pwInput.type = isPw ? 'text' : 'password';
+    pwToggle.textContent = isPw ? 'ocultar' : 'ver';
+  });
+
+  // fake submit -> stamp animation
+  const form = document.getElementById('loginForm');
+  const btn = document.getElementById('submitBtn');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (btn.classList.contains('stamped')) return;
+    btn.classList.add('stamped');
+    btn.disabled = true;
+  });
+</script>
+</body>
+</html>

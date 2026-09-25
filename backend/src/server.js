@@ -19,11 +19,12 @@ const allowedOrigins = (process.env.CLIENT_URL || '')
   .map((origin) => origin.trim())
   .filter(Boolean);
 
+
 function isAllowedOrigin(origin) {
   if (!origin) return true;
   if ([...defaultOrigins, ...allowedOrigins].includes(origin)) return true;
 
-  try {
+  try{
     return new URL(origin).hostname.endsWith('.vercel.app');
   } catch {
     return false;

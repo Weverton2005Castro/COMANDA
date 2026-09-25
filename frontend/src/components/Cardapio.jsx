@@ -4,9 +4,9 @@ import api from '../services/api.js';
 import { useToast } from '../contexts/ToastContext.jsx';
 
 const tabs = [
-  { id: 'prato', label: 'Pratos' },
-  { id: 'bebida', label: 'Bebidas' },
-  { id: 'extra', label: 'Extras' }
+  { id: 'prato', label: 'pratos' },
+  { id: 'bebida', label: 'bebidas' },
+  { id: 'extra', label: 'extras' }
 ];
 
 export default function Cardapio({ onComandaChange }) {
@@ -38,7 +38,7 @@ export default function Cardapio({ onComandaChange }) {
         data.filter((produto) => produto.disponivel)
       );
     } catch {
-      showToast('Erro ao carregar produtos.', 'error');
+      showToast('erro ao carregar produtos.', 'error');
     }
   }
 
@@ -120,7 +120,7 @@ export default function Cardapio({ onComandaChange }) {
   async function submitItems() {
     if (!selection.length) {
       showToast(
-        'Selecione ao menos um produto.',
+        'selecione ao menos um produto.',
         'warning'
       );
 
@@ -128,7 +128,7 @@ export default function Cardapio({ onComandaChange }) {
     }
 
     if (!mesa?.id) {
-      showToast('Mesa não encontrada.', 'error');
+      showToast('mesa não encontrada.', 'error');
       return;
     }
 
@@ -159,7 +159,7 @@ export default function Cardapio({ onComandaChange }) {
       onComandaChange?.(data);
 
       showToast(
-        'Itens enviados com sucesso.',
+        'itens enviados com sucesso.',
         'success'
       );
     } catch (error) {
@@ -169,7 +169,7 @@ export default function Cardapio({ onComandaChange }) {
 
       showToast(
         error.response?.data?.message ||
-        'Erro ao enviar itens.',
+        'erro ao enviar itens.',
         'error'
       );
     }
@@ -195,7 +195,7 @@ export default function Cardapio({ onComandaChange }) {
       );
 
       showToast(
-        'Item removido.',
+        'item removido.',
         'success'
       );
 
@@ -204,7 +204,7 @@ export default function Cardapio({ onComandaChange }) {
       console.error(error);
 
       showToast(
-        'Erro ao remover item.',
+        'erro ao remover item.',
         'error'
       );
     }
@@ -221,7 +221,7 @@ export default function Cardapio({ onComandaChange }) {
       );
 
       showToast(
-        'Pagamento finalizado.',
+        'pagamento finalizado.',
         'success'
       );
 
@@ -233,7 +233,7 @@ export default function Cardapio({ onComandaChange }) {
       console.error(error);
 
       showToast(
-        'Erro ao finalizar pagamento.',
+        'erro ao finalizar pagamento.',
         'error'
       );
     }
@@ -250,8 +250,8 @@ export default function Cardapio({ onComandaChange }) {
     >
       <div className="section-title">
         <h2>
-          Cardápio
-          {mesa && ` - Mesa ${mesa.numero}`}
+          cardápio
+          {mesa && ` - mesa ${mesa.numero}`}
         </h2>
 
         <strong>
@@ -288,7 +288,7 @@ export default function Cardapio({ onComandaChange }) {
           onClick={handleVoltar}
           type="button"
         >
-          Voltar
+          voltar
         </button>
       </div>
 
@@ -346,7 +346,7 @@ export default function Cardapio({ onComandaChange }) {
             }}
           >
             <h3 style={{ margin: 0 }}>
-              Carrinho ({selection.length})
+              carrinho ({selection.length})
             </h3>
 
             <strong>
@@ -418,9 +418,9 @@ export default function Cardapio({ onComandaChange }) {
                 type="button"
                 style={{ marginTop: '15px' }}
               >
-                Enviar para Comanda
+                enviar para comanda
               </button>
-              
+
               {comanda?.status === 'pronto' && (
                 <button
                   className="btn warning full"
@@ -428,7 +428,7 @@ export default function Cardapio({ onComandaChange }) {
                   type="button"
                   style={{ marginTop: '10px' }}
                 >
-                  Cliente já pagou
+                  cliente já pagou
                 </button>
               )}
             </>

@@ -8,11 +8,11 @@ export default function GestorDashboard() {
 
   return (
     <div>
-      <Header title="Painel do Gestor" />
+      <Header title="painel do gestor" />
       <main className="container">
         <div className="tabs page-tabs">
-          <button className={tab === 'comandas' ? 'active' : ''} onClick={() => setTab('comandas')} type="button">Comandas</button>
-          <button className={tab === 'financeiro' ? 'active' : ''} onClick={() => setTab('financeiro')} type="button">Financeiro</button>
+          <button className={tab === 'comandas' ? 'active' : ''} onClick={() => setTab('comandas')} type="button">comandas</button>
+          <button className={tab === 'financeiro' ? 'active' : ''} onClick={() => setTab('financeiro')} type="button">financeiro</button>
         </div>
         {tab === 'comandas' ? <ComandasList /> : <ResumoFinanceiro />}
       </main>

@@ -5,6 +5,7 @@ import App from './App.jsx';
 import { AuthProvider } from './contexts/AuthContext.jsx';
 import { SocketProvider } from './contexts/SocketContext.jsx';
 import { ToastProvider } from './contexts/ToastContext.jsx';
+import './theme.css';
 import './styles.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(

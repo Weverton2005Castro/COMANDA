@@ -6,11 +6,11 @@ export default function ConfirmDialog({ title, message, onConfirm, onCancel }) {
         <h3>{title}</h3>
         <p>{message}</p>
         <div className="actions end">
-          <button className="btn secondary" onClick={onCancel} type="button">
-            Cancelar
+          <button className="btn secondary small" onClick={onCancel} type="button">
+            cancelar
           </button>
-          <button className="btn danger" onClick={onConfirm} type="button">
-            Confirmar
+          <button className="btn danger small" onClick={onConfirm} type="button">
+            confirmar
           </button>
         </div>
       </div>

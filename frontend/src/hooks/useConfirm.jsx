@@ -7,8 +7,8 @@ export default function useConfirm() {
   function confirm(options) {
     return new Promise((resolve) => {
       setDialog({
-        title: options.title || 'Confirmar acao',
-        message: options.message || 'Deseja continuar?',
+        title: options.title || 'confirmar ação',
+        message: options.message || 'deseja continuar?',
         onConfirm: () => {
           setDialog(null);
           resolve(true);
