@@ -1,14 +1,23 @@
 {
+    "functions": {
+        "api/**/*.js": {
+            "runtime": "nodejs18.x"
+        }
+    },
+    "buildCommand": "cd frontend && npm run build",
+    "outputDirectory": "frontend/dist",
     "rewrites": [
         {
             "source": "/api/:path*",
-            "destination": "/api/:path*"
+            "destination": "/api/index.js"
         },
         {
             "source": "/_/backend/api/:path*",
-            "destination": "/api/:path*"
+            "destination": "/api/index.js"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
         }
-    ],
-    "buildCommand": "cd frontend && npm run build",
-    "outputDirectory": "frontend/dist"
+    ]
 }
