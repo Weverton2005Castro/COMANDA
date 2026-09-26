@@ -1,13 +1,14 @@
 {
-    "experimentalServices": {
-        "frontend": {
-            "entrypoint": "frontend",
-            "routePrefix": "/",
-            "framework": "vite"
+    "rewrites": [
+        {
+            "source": "/api/:path*",
+            "destination": "/api/:path*"
         },
-        "backend": {
-            "entrypoint": "backend",
-            "routePrefix": "/_/backend"
+        {
+            "source": "/_/backend/api/:path*",
+            "destination": "/api/:path*"
         }
-    }
+    ],
+    "buildCommand": "cd frontend && npm run build",
+    "outputDirectory": "frontend/dist"
 }
