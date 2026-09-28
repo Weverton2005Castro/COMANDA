@@ -64,7 +64,7 @@ Frontend: `http://localhost:3000`
 No deploy, o frontend nao deve apontar para `localhost`. Este projeto usa, por padrao:
 
 ```env
-VITE_API_URL=/_/backend/api
+VITE_API_URL=/api
 ```
 
 Configure na Vercel as variaveis do backend:
