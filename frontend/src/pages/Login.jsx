@@ -90,6 +90,10 @@ export default function Login() {
           </StampButton>
         </form>
 
+        <Link to="/cadastro" className="btn secondary full" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}>
+          criar o seu restaurante
+        </Link>
+
         <p className="foot">impresso pelo sistema de comandas</p>
       </TicketCard>
     </main>
