@@ -7,6 +7,7 @@ import AdminDashboard from './pages/AdminDashboard.jsx';
 import { useAuth } from './contexts/AuthContext.jsx';
 import Cardapio from './components/Cardapio.jsx';
 import Onboarding from './pages/Onboarding.jsx';
+import CardapioCliente from './pages/CardapioCliente.jsx';
 
 function DashboardRouter() {
   const { user } = useAuth();
@@ -30,6 +31,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <Login />} />
+      <Route path="/cardapio/:restauranteId" element={<CardapioCliente />} />
       <Route path="/cadastro" element={user ? <Navigate to="/onboarding" replace /> : <Onboarding />} />
       <Route path="/onboarding" element={<PrivateRoute><Onboarding /></PrivateRoute>} />
       <Route path="/cardapio" element={<PrivateRoute><Cardapio /></PrivateRoute>} />

@@ -7,6 +7,28 @@ export const listProdutos = asyncHandler(async (req, res) => {
   res.json(data);
 });
 
+export const listCardapioPublico = asyncHandler(async (req, res) => {
+  const { data: restaurante, error: restauranteError } = await supabase
+    .from('restaurantes')
+    .select('id,nome')
+    .eq('id', req.params.restauranteId)
+    .maybeSingle();
+
+  if (restauranteError) throw badRequest(restauranteError.message);
+  if (!restaurante) throw notFound('Restaurante nao encontrado');
+
+  const { data: produtos, error } = await supabase
+    .from('produtos')
+    .select('id,nome,preco,categoria,descricao')
+    .eq('tenant_id', restaurante.id)
+    .eq('disponivel', true)
+    .order('categoria')
+    .order('nome');
+
+  if (error) throw badRequest(error.message);
+  res.json({ restaurante, produtos });
+});
+
 export const createProduto = asyncHandler(async (req, res) => {
   const { nome, preco, categoria, descricao, disponivel = true } = req.body;
   const { data, error } = await supabase
