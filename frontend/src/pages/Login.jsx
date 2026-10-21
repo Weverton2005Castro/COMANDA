@@ -42,7 +42,6 @@ export default function Login() {
       <TicketCard 
         number="0842" 
         timestamp={clock} 
-        tilted={true}
         className="login-card"
       >
         <h1>Comanda</h1>
