@@ -44,7 +44,7 @@ SUPABASE_SERVICE_KEY=
 JWT_SECRET=troque-este-segredo
 JWT_EXPIRE=7d
 PORT=5000
-CLIENT_URL=http://localhost:3000
+CLIENT_URL=http://localhost:3000,http://172.25.26.125:3000,http://172.25.26.107:3000
 ```
 
 API: `http://localhost:5000/api`

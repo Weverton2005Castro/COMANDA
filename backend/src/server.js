@@ -35,7 +35,9 @@ const corsOptions = {
   origin(origin, callback) {
     callback(null, isAllowedOrigin(origin));
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE']
+  methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204
 };
 
 const io = server

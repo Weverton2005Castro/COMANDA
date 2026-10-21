@@ -206,9 +206,15 @@ export const pagarComanda = asyncHandler(async (req, res) => {
 });
 
 export const financeiroDia = asyncHandler(async (req, res) => {
-  const today = new Date().toISOString().slice(0, 10);
-  const start = `${today}T00:00:00.000Z`;
-  const end = `${today}T23:59:59.999Z`;
+  // O financeiro acompanha o dia civil do restaurante (Manaus), não o dia UTC.
+  const today = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Manaus',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(new Date());
+  const start = `${today}T00:00:00.000-04:00`;
+  const end = `${today}T23:59:59.999-04:00`;
 
   const { data: comandas, error } = await supabase
     .from('comandas')
